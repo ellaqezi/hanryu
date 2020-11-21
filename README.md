@@ -8,6 +8,9 @@
 [`neo4j`]: https://neo4j.com/developer/docker-run-neo4j/
 [166]: https://github.com/neo4j/docker-neo4j/issues/166
 [48357238]: https://stackoverflow.com/questions/48357238/how-can-i-run-cypher-scripts-on-startup-of-a-neo4j-docker-container
+[4.2]: https://neo4j.com/docs/operations-manual/current/docker/introduction/
+
+> Based on [`neo4j:4.2.0`][4.2]
 
 Quickstart
 ---
@@ -52,6 +55,9 @@ Step-by-step
     MATCH p = ()-[]-()-[]-()
     RETURN p
       LIMIT 750
+   
+    // up to 6 deg of separation
+    match p=(:Actor {Actor: 'Park Hyung-sik'})-[*1..6]-(:Title) return p
     ```
 
 References
