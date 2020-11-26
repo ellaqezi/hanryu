@@ -17,13 +17,19 @@ Quickstart
 1. Build the image and start the [`neo4j`] container
     ```shell script
     export TAG=`date +"%Y%m%d%H%M"`
-    docker build -t hanryu/tracker:$TAG .
     export PW= #insert password here
+    export NEO4J_AUTH=neo4j/$PW
+    docker build --no-cache --build-arg NEO4J_AUTH -t hanryu/tracker:$TAG .
+    rm -R $(pwd)/data/databases $(pwd)/data/dbms $(pwd)/data/transactions
     docker run -p7474:7474 -p7687:7687 -v $(pwd)/import:/import -v $(pwd)/data:/data \
-    -e NEO4J_AUTH=neo4j/$PW --user=$(id -u):$(id -g) hanryu/tracker:$TAG
+    -e NEO4J_AUTH=$NEO4J_AUTH --user=$(id -u):$(id -g) hanryu/tracker:$TAG &
+    unset NEO4J_AUTH
     ```
    
-   > Run `docker stop $(docker ps | grep hanryu | cut -d" " -f1)` to stop the container.
+   Run `ctrl + C` or `docker stop $(docker ps | grep hanryu | cut -d" " -f1)` to stop the container.
+   
+   > If you've previously created the database i.e. in `$(pwd)/data`, remember to remove the subdirectories when 
+   changing passwords. The database will otherwise expect the password you used the first time you set it up.
 
 Step-by-step
 ---
