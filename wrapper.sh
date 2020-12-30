@@ -14,7 +14,7 @@ export NEO4J_USERNAME=${NEO4J_AUTH%%/*}
 export NEO4J_PASSWORD=${NEO4J_AUTH##*/}
 for f in *.cyp*; do
   echo "running cypher [${f}]"
-  until cypher-shell -u "$NEO4J_USERNAME" -p "$NEO4J_PASSWORD" --file "$f" || exit 1; do
+  until cypher-shell --file "$f" || exit 1; do
     echo "[${f}]"
     sleep 10
   done

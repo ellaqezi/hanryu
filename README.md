@@ -8,19 +8,28 @@
 [`neo4j`]: https://neo4j.com/developer/docker-run-neo4j/
 [166]: https://github.com/neo4j/docker-neo4j/issues/166
 [48357238]: https://stackoverflow.com/questions/48357238/how-can-i-run-cypher-scripts-on-startup-of-a-neo4j-docker-container
+[4.2]: https://neo4j.com/docs/operations-manual/current/docker/introduction/
+
+> Based on [`neo4j:4.2.0`][4.2]
 
 Quickstart
 ---
 1. Build the image and start the [`neo4j`] container
     ```shell script
     export TAG=`date +"%Y%m%d%H%M"`
-    docker build -t hanryu/tracker:$TAG .
     export PW= #insert password here
+    export NEO4J_AUTH=neo4j/$PW
+    docker build --no-cache --build-arg NEO4J_AUTH -t hanryu/tracker:$TAG .
+    rm -R $(pwd)/data/{databases,dbms,transactions}
     docker run -p7474:7474 -p7687:7687 -v $(pwd)/import:/import -v $(pwd)/data:/data \
-    -e NEO4J_AUTH=neo4j/$PW --user=$(id -u):$(id -g) hanryu/tracker:$TAG
+    -e NEO4J_AUTH=$NEO4J_AUTH --user=$(id -u):$(id -g) hanryu/tracker:$TAG &
+    unset NEO4J_AUTH
     ```
    
-   > Run `docker stop $(docker ps | grep hanryu | cut -d" " -f1)` to stop the container.
+   Run `ctrl + C` or `docker stop $(docker ps | grep hanryu | cut -d" " -f1)` to stop the container.
+   
+   > If you've previously created the database i.e. in `$(pwd)/data`, remember to remove the subdirectories when 
+   changing passwords. The database will otherwise expect the password you used the first time you set it up.
 
 Step-by-step
 ---
@@ -52,6 +61,9 @@ Step-by-step
     MATCH p = ()-[]-()-[]-()
     RETURN p
       LIMIT 750
+   
+    // up to 6 deg of separation
+    match p=(:Actor {Actor: 'Park Hyung-sik'})-[*1..6]-(:Title) return p
     ```
 
 References
